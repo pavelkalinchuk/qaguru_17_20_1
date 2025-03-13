@@ -1,0 +1,26 @@
+[project]
+name = "qaguru_17_20_1"
+version = "0.1.0"
+description = "Testing mobile apps. Home work 2."
+authors = [
+    {name = "pavelkalinchuk",email = "715m4s@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8,<4.0"
+dependencies = [
+    "requests (>=2.32.3,<3.0.0)",
+    "pytest (>=8.3.4,<9.0.0)",
+    "selene (>=2.0.0rc9,<3.0.0)",
+    "allure-pytest (>=2.13.5,<3.0.0)",
+    "appium-python-client (>=4.5.1,<5.0.0)",
+    "python-dotenv (>=1.0.1,<2.0.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "pydantic-settings (>=2.8.1,<3.0.0)",
+]
+
+[tool.pytest.ini_options]
+addopts = "--alluredir=allure-results --clean-alluredir"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

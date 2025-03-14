@@ -1,9 +1,20 @@
+import os
+
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from selene import browser
 
 from utils.allure_attach import *
+
+
+def find_apk_file(file_name):
+    """
+    Путь до файла .apk
+    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))  # Директория текущего файла
+    file_path = os.path.join(current_dir, f"../resources/{file_name}")  # Путь до файла
+    return file_path
 
 
 @pytest.fixture(scope='function')
@@ -48,7 +59,7 @@ def android_emulator_device_management():
         "platformName": "Android",
         'deviceName': 'emulator-5554',
         "automationName": "UiAutomator2",
-        'app': '/Users/pavelkalincuk/qaguru/homework/qaguru_17_20_1/utils/app-alpha-universal-release.apk',
+        'app': find_apk_file("app-alpha-universal-release.apk"),
         "appWaitActivity": "org.wikipedia.*"
     })
 

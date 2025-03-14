@@ -23,7 +23,8 @@ def android_bstack_management():
     options = UiAutomator2Options().load_capabilities({
         'platformVersion': '9.0',
         'deviceName': 'Google Pixel 3',
-        'app': 'bs://sample.app',
+        'app': 'bs://9e97c6f325995f041312502be7b584a7e26ba634',
+        # 'app': 'bs://sample.app',
         # Настройки BrowserStack
         'bstack:options': {
             'projectName': 'First Python project',
@@ -43,13 +44,15 @@ def android_bstack_management():
 
     yield browser
 
-    add_screenshot(browser)
-    add_xml(browser)
-    # Получение ID сессии для прикрепления видео
-    session_id = browser.driver.session_id
-    add_bstack_video(session_id)
-
-    browser.quit()
+    try:
+        add_screenshot(browser)
+        add_xml(browser)
+        session_id = browser.driver.session_id
+        add_bstack_video(session_id)
+    except Exception as e:
+        print(f"Ошибка при завершении сессии: {e}")
+    finally:
+        browser.quit()
 
 
 @pytest.fixture(scope='function')
@@ -76,6 +79,18 @@ def android_emulator_device_management():
     add_xml(browser)
 
     browser.quit()
+
+
+# Фикстура для выбора окружения
+@pytest.fixture(scope='function')
+def android_device_management(request):
+    environment = request.param
+    if environment == 'bstack':
+        return request.getfixturevalue('android_bstack_management')
+    elif environment == 'emulator':
+        return request.getfixturevalue('android_emulator_device_management')
+    else:
+        raise ValueError(f"Unknown environment: {environment}")
 
 
 @pytest.fixture(scope='function')

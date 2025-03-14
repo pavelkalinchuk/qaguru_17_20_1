@@ -55,7 +55,7 @@ def android_emulator_device_management():
     # Инициализация удаленного драйвера
     with allure.step('Инициализация сессии приложения'):
         browser.config.driver = webdriver.Remote(
-            "http://127.0.0.1:4723",  # URL device emulator
+            "http://127.0.0.1:4723/wd/hub",  # URL device emulator
             options=options
         )
 
@@ -63,11 +63,9 @@ def android_emulator_device_management():
 
     add_screenshot(browser)
     add_xml(browser)
-    # Получение ID сессии для прикрепления видео
-    # session_id = browser.driver.session_id
-    # add_bstack_video(session_id)
 
     browser.quit()
+
 
 @pytest.fixture(scope='function')
 def web_browser_management():

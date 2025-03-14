@@ -4,6 +4,12 @@ from selene import browser, have
 
 
 def test_search(android_emulator_device_management):
+    with step("Кликаем на кнопке Skip для пропуска страницы приветствия"):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_skip_button")).click()
+
+    with step("Закрываем окно Introducing"):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/closeButton")).click()
+
     with step('Находим и кликаем на строке поиска'):
         browser.element((AppiumBy.ACCESSIBILITY_ID, "Search Wikipedia")).click()
 

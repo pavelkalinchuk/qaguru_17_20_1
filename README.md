@@ -18,7 +18,25 @@
     - Appium Driver UiAutomator2 (_для взаимодействия с android-системами_)
     - Android Studio (_для запуска эмулятора мобильного устройства_)
 
+---------
+### Запуск тестов
 
+#### Для запуска тестов использовать следующие команды:
+
+ - запуск на эмуляторе:
+```commandline
+pytest -m mobile --env=emulator
+```
+ - запуск на ресурсе BrowserStack:
+```commandline
+pytest -m mobile --env=bstack
+```
+- запуск локально в вэб-браузере (_GoogleChrome_):
+```commandline
+pytest -m web
+```
+
+---------
 ### Результаты тестов
 
 ![Главный экрна allur-отчёта](resources/main_screen.png)

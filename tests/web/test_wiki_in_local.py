@@ -1,7 +1,9 @@
+import pytest
 from selene import have, browser
 from allure import step
 
 
+@pytest.mark.web
 def test_search(web_browser_management):
     with step('Запускаем браузер со страницей википедия'):
         browser.open('/')

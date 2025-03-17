@@ -4,7 +4,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 from selene import browser, have
 
 
-@pytest.mark.parametrize('android_device_management', ['bstack', 'emulator'], indirect=True)
+@pytest.mark.mobile
 def test_search(android_device_management):
     with step("Кликаем на кнопке Skip для пропуска страницы приветствия"):
         browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_skip_button")).click()

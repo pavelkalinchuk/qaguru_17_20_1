@@ -1,63 +1,56 @@
 import os
-
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from selene import browser
-
 from utils.allure_attach import *
 
 
 def find_apk_file(file_name):
-    """
-    Путь до файла .apk
-    """
-    current_dir = os.path.dirname(os.path.abspath(__file__))  # Директория текущего файла
-    file_path = os.path.join(current_dir, f"../resources/{file_name}")  # Путь до файла
+    """Путь до файла .apk"""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, f"../resources/{file_name}")
     return file_path
 
 
 @pytest.fixture(scope='function')
 def android_bstack_management():
-    """Настройка браузера для работы в browserstack"""
+    """Настройка браузера для работы в BrowserStack"""
     options = UiAutomator2Options().load_capabilities({
         'platformVersion': '9.0',
         'deviceName': 'Google Pixel 3',
         'app': 'bs://9e97c6f325995f041312502be7b584a7e26ba634',
-        # 'app': 'bs://sample.app',
-        # Настройки BrowserStack
         'bstack:options': {
             'projectName': 'First Python project',
             'buildName': 'browserstack-build-1',
             'sessionName': 'BStack first_test',
-            # Учетные данные для авторизации на BrowserStack
             'userName': settings.BROWSERSTACK_USER_NAME,
             'accessKey': settings.BROWSERSTACK_ACCESS_KEY,
         }
     })
-    # Инициализация удаленного драйвера
     with allure.step('Инициализация сессии приложения'):
         browser.config.driver = webdriver.Remote(
-            settings.BROWSERSTACK_URL,  # URL BrowserStack
+            settings.BROWSERSTACK_URL,
             options=options
         )
 
     yield browser
 
-    try:
-        add_screenshot(browser)
-        add_xml(browser)
-        session_id = browser.driver.session_id
-        add_bstack_video(session_id)
-    except Exception as e:
-        print(f"Ошибка при завершении сессии: {e}")
-    finally:
-        browser.quit()
+    if browser.driver:
+        try:
+            add_screenshot(browser)
+            add_xml(browser)
+            session_id = browser.driver.session_id
+            add_bstack_video(session_id)
+        except Exception as e:
+            print(f"Ошибка при завершении сессии: {e}")
+        finally:
+            browser.quit()
 
 
 @pytest.fixture(scope='function')
 def android_emulator_device_management():
-    """Настройка браузера для работы в browserstack"""
+    """Настройка браузера для работы с эмулятором"""
     options = UiAutomator2Options().load_capabilities({
         "platformName": "Android",
         'deviceName': 'emulator-5554',
@@ -66,25 +59,43 @@ def android_emulator_device_management():
         "appWaitActivity": "org.wikipedia.*"
     })
 
-    # Инициализация удаленного драйвера
     with allure.step('Инициализация сессии приложения'):
         browser.config.driver = webdriver.Remote(
-            "http://127.0.0.1:4723/wd/hub",  # URL device emulator
+            "http://127.0.0.1:4723/wd/hub",
             options=options
         )
 
     yield browser
 
-    add_screenshot(browser)
-    add_xml(browser)
+    if browser.driver:
+        try:
+            add_screenshot(browser)
+            add_xml(browser)
+        except Exception as e:
+            print(f"Ошибка при завершении сессии: {e}")
+        finally:
+            browser.quit()
 
-    browser.quit()
+
+def pytest_addoption(parser):
+    """Добавление пользовательского параметра командной строки."""
+    parser.addoption(
+        "--env",
+        action="store",
+        default="emulator",
+        help="Environment to run tests against: bstack or emulator"
+    )
 
 
-# Фикстура для выбора окружения
+@pytest.fixture(scope='session')
+def env(request):
+    """Передача окружения в фикстуру из командной строки"""
+    return request.config.getoption("--env")
+
+
 @pytest.fixture(scope='function')
-def android_device_management(request):
-    environment = request.param
+def android_device_management(request, env):
+    environment = env
     if environment == 'bstack':
         return request.getfixturevalue('android_bstack_management')
     elif environment == 'emulator':
@@ -104,7 +115,6 @@ def web_browser_management():
     browser.config.timeout = 3.0
     yield browser
 
-    # Прикрепление скриншота к отчету Allure
     if browser.driver:
         try:
             add_screenshot(browser)
